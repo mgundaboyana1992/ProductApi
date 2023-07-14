@@ -73,7 +73,7 @@ namespace ProductApi.Controllers
                 if(id!=product.Id)
                 {
                     return BadRequest("Product Id Mismatch");
-                }
+                }   
 
                 var updatingProduct = await _productRepository.GetProduct(id);
 

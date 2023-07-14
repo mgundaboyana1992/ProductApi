@@ -16,7 +16,14 @@
         }
         public async Task<Product> AddProduct(Product product)
         {
-            product.Id = _products.Max(x => x.Id) + 1;
+            if (_products == null || _products.Count == 0)
+            {
+                product.Id = 1;
+            }
+            else
+            {
+                product.Id = _products.Max(x => x.Id) + 1;
+            }
             _products.Add(product);
 
             return product;
