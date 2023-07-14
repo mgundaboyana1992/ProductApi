@@ -11,7 +11,7 @@ namespace ProductApi
             // Add services to the container.
 
             builder.Services.AddControllers();
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddSingleton<IProductRepository, ProductRepository>();
 
             var app = builder.Build();
 

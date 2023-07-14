@@ -5,15 +5,19 @@
         IList<Product> _products;
         public ProductRepository()
         {
-            _products = new List<Product>();
-            _products.Add(new Product() { Id = 1, Code = "1001", Name = "SamsungTV", Quantity = 10, Price = 10000, Description = "LED TV", Image = "" });
-            _products.Add(new Product() { Id = 2, Code = "1002", Name = "XiaomiMobile", Quantity = 5, Price = 5000, Description = "Mobile", Image = "" });
-            _products.Add(new Product() { Id = 3, Code = "1003", Name = "Walkmate", Quantity = 11, Price = 500, Description = "Slippers", Image = "" });
+            if (_products == null)
+            {
+                _products = new List<Product>();
+                _products.Add(new Product() { Id = 1, Code = "1001", Name = "SamsungTV", Quantity = 10, Price = 10000, Description = "LED TV", Image = "" });
+                _products.Add(new Product() { Id = 2, Code = "1002", Name = "XiaomiMobile", Quantity = 5, Price = 5000, Description = "Mobile", Image = "" });
+                _products.Add(new Product() { Id = 3, Code = "1003", Name = "Walkmate", Quantity = 11, Price = 500, Description = "Slippers", Image = "" });
+
+            }
         }
         public async Task<Product> AddProduct(Product product)
         {
-            product.Id = _products.Max().Id + 1;
-            _products.ToList().Add(product);
+            product.Id = _products.Max(x => x.Id) + 1;
+            _products.Add(product);
 
             return product;
         }
@@ -24,13 +28,14 @@
 
             if (result != null)
             {
-                _products.ToList().Remove(result);
+                _products.Remove(result);
             }
         }
 
         public async Task<Product> GetProduct(int productId)
         {
-            return _products.FirstOrDefault(x => x.Id == productId);
+            var result = _products.FirstOrDefault(x => x.Id == productId);
+            return result;
         }
 
         public async Task<IEnumerable<Product>> GetProducts()
