@@ -9,9 +9,9 @@ namespace ProductApi.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly ILogger<ProductsController> _logger;
-        private readonly IProductRepository _productRepository;
+        private readonly IRepository<Product> _productRepository;
 
-        public ProductsController(ILogger<ProductsController> logger, IProductRepository productRepository)
+        public ProductsController(ILogger<ProductsController> logger, IRepository<Product> productRepository)
         {
             _logger = logger;
             _productRepository = productRepository;
@@ -22,7 +22,7 @@ namespace ProductApi.Controllers
         {
             try
             {
-                return Ok(await _productRepository.GetProducts());
+                return Ok(await _productRepository.Get());
             }
             catch (Exception ex)
             {
@@ -36,7 +36,7 @@ namespace ProductApi.Controllers
             
             try
             {
-                var result = await _productRepository.GetProduct(id);
+                var result = await _productRepository.Get(id);
                 if(result == null)
                 {
                     return NotFound($"ProductId {id} not found");
@@ -56,7 +56,7 @@ namespace ProductApi.Controllers
             {
                 if (product == null)
                     return BadRequest();
-                var createdProduct = await _productRepository.AddProduct(product);
+                var createdProduct = await _productRepository.Add(product);
 
                 return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id }, createdProduct);
             }
@@ -76,12 +76,12 @@ namespace ProductApi.Controllers
                     return BadRequest("Product Id Mismatch");
                 }   
 
-                var updatingProduct = await _productRepository.GetProduct(id);
+                var updatingProduct = await _productRepository.Get(id);
 
                 if (updatingProduct == null)
                     return NotFound($"ProductId {id} not found");               
 
-                return Ok(await _productRepository.UpdateProduct(product));
+                return Ok(await _productRepository.Update(product));
             }
             catch (Exception ex)
             {
@@ -94,11 +94,11 @@ namespace ProductApi.Controllers
         {
             try
             {              
-                var deletingProduct = await _productRepository.GetProduct(id);
+                var deletingProduct = await _productRepository.Get(id);
                 if (deletingProduct == null)
                     return NotFound($"ProductId {id} not found");
 
-                await _productRepository.DeleteProduct(id);
+                await _productRepository.Delete(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -112,7 +112,7 @@ namespace ProductApi.Controllers
         {
             try
             {
-                var result = await _productRepository.GetProductsBySearch(category, subcategory, name);
+                var result = await _productRepository.Search(category, subcategory, name);
                 return Ok(result);
             }
             catch (Exception ex)

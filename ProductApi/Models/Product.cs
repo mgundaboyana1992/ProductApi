@@ -2,8 +2,6 @@
 {
     public class Product
     {
-        // Product Code, Name, Quantity, Price, Product description and image
-
         public int Id { get; set; }
         public string? Code { get; set; }
         public string? Name { get; set; }

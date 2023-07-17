@@ -27,7 +27,7 @@ namespace ProductApi
             });
 
             builder.Services.AddControllers();
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IRepository<Product>, ProductRepository>();
 
             var app = builder.Build();
 
