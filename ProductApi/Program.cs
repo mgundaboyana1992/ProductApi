@@ -1,5 +1,6 @@
 using ProductApi.Models;
 using Microsoft.EntityFrameworkCore;
+using ProductApi.Repository;
 
 namespace ProductApi
 {
@@ -26,7 +27,7 @@ namespace ProductApi
             });
 
             builder.Services.AddControllers();
-            builder.Services.AddSingleton<IProductRepository, MockProductRepository>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
             var app = builder.Build();
 
