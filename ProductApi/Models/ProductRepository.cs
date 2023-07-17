@@ -8,9 +8,9 @@
             if (_products == null)
             {
                 _products = new List<Product>();
-                _products.Add(new Product() { Id = 1, Code = "1001", Name = "SamsungTV", Quantity = 10, Price = 10000, Description = "LED TV", Image = "" });
-                _products.Add(new Product() { Id = 2, Code = "1002", Name = "XiaomiMobile", Quantity = 5, Price = 5000, Description = "Mobile", Image = "" });
-                _products.Add(new Product() { Id = 3, Code = "1003", Name = "Walkmate", Quantity = 11, Price = 500, Description = "Slippers", Image = "" });
+                _products.Add(new Product() { Id = 1, Code = "1001", Name = "SamsungTV", Quantity = 10, Price = 10000, Description = "LED TV", Image = "",Category=1,SubCategory=1 });
+                _products.Add(new Product() { Id = 2, Code = "1002", Name = "XiaomiMobile", Quantity = 5, Price = 5000, Description = "Mobile", Image = "",Category=1,SubCategory=2 });
+                _products.Add(new Product() { Id = 3, Code = "1003", Name = "Walkmate", Quantity = 11, Price = 500, Description = "Slippers", Image = "", Category = 3, SubCategory = 6 });
 
             }
         }
@@ -50,6 +50,28 @@
             return _products.ToList();
         }
 
+        public async Task<IEnumerable<Product>> GetProductsBySearch(int? category, int? subcategory, string name)
+        {
+            IEnumerable<Product> query = _products;
+
+            if (category != null)
+            {
+                query = query.Where(x => x.Category == category);
+            }
+
+            if (subcategory != null)
+            {
+                query = query.Where(x => x.SubCategory == subcategory);
+            }
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(x => x.Name.ToLower().Trim().Contains(name.ToLower().Trim()));
+            }
+
+            return query.ToList();
+        }
+
         public async Task<Product> UpdateProduct(Product product)
         {
             var result = _products.FirstOrDefault(x => x.Id == product.Id);
@@ -62,6 +84,8 @@
                 result.Quantity = product.Quantity;
                 result.Price = product.Price;
                 result.Image = product.Image;
+                result.Category = product.Category;
+                result.SubCategory = product.SubCategory;
 
                 return result;
             }

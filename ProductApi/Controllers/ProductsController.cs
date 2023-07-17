@@ -105,5 +105,19 @@ namespace ProductApi.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error updating product");
             }
         }
+
+        [HttpGet("{Search}")]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProductsBySearch(int? category, int? subcategory, string? name)
+        {
+            try
+            {
+                var result = await _productRepository.GetProductsBySearch(category, subcategory, name);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error searching the products list");
+            }
+        }
     }
 }
