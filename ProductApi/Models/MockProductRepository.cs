@@ -1,9 +1,9 @@
 ﻿namespace ProductApi.Models
 {
-    public class ProductRepository : IProductRepository
+    public class MockProductRepository : IProductRepository
     {
         IList<Product> _products;
-        public ProductRepository()
+        public MockProductRepository()
         {
             if (_products == null)
             {
