@@ -1,4 +1,5 @@
 using ProductApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ProductApi
 {
@@ -9,7 +10,10 @@ namespace ProductApi
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DBConnection"));
+            });
 
             builder.Services.AddCors(options =>
             {
@@ -22,7 +26,7 @@ namespace ProductApi
             });
 
             builder.Services.AddControllers();
-            builder.Services.AddSingleton<IProductRepository, ProductRepository>();
+            builder.Services.AddSingleton<IProductRepository, MockProductRepository>();
 
             var app = builder.Build();
 
