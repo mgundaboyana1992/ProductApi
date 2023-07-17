@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductApi.Models;
 using ProductApi.Repository;
+using ProductApi.Service;
 
 namespace ProductApi.Controllers
 {
@@ -9,20 +10,20 @@ namespace ProductApi.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly ILogger<ProductsController> _logger;
-        private readonly IRepository<Product> _productRepository;
+        private readonly IService<Product> _productService;
 
-        public ProductsController(ILogger<ProductsController> logger, IRepository<Product> productRepository)
+        public ProductsController(ILogger<ProductsController> logger, IService<Product> productService)
         {
             _logger = logger;
-            _productRepository = productRepository;
+            _productService = productService;
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetProducts()
+        public async Task<ActionResult> Get()
         {
             try
             {
-                return Ok(await _productRepository.Get());
+                return Ok(await _productService.Get());
             }
             catch (Exception ex)
             {
@@ -31,13 +32,13 @@ namespace ProductApi.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<Product>> GetProduct(int id)
+        public async Task<ActionResult<Product>> Get(int id)
         {
-            
+
             try
             {
-                var result = await _productRepository.Get(id);
-                if(result == null)
+                var result = await _productService.Get(id);
+                if (result == null)
                 {
                     return NotFound($"ProductId {id} not found");
                 }
@@ -50,15 +51,21 @@ namespace ProductApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Product>> CreateProduct(Product product)
+        public async Task<ActionResult<Product>> Create(Product product)
         {
             try
             {
                 if (product == null)
                     return BadRequest();
-                var createdProduct = await _productRepository.Add(product);
 
-                return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id }, createdProduct);
+                var result = await _productService.Add(product);
+
+                if (result == null)
+                {
+                    return BadRequest("Price/Quantity cannot be negative");
+                }
+
+                return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
             }
             catch (Exception ex)
             {
@@ -67,21 +74,28 @@ namespace ProductApi.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<ActionResult<Product>> UpdateProduct(int id , Product product)
+        public async Task<ActionResult<Product>> Update(int id, Product product)
         {
             try
             {
-                if(id!=product.Id)
+                if (id != product.Id)
                 {
                     return BadRequest("Product Id Mismatch");
-                }   
+                }
 
-                var updatingProduct = await _productRepository.Get(id);
+                var updatingProduct = await _productService.Get(id);
 
                 if (updatingProduct == null)
-                    return NotFound($"ProductId {id} not found");               
+                    return NotFound($"ProductId {id} not found");
 
-                return Ok(await _productRepository.Update(product));
+                var result = await _productService.Update(product);
+
+                if (result == null)
+                {
+                    return BadRequest("Price/Quantity cannot be negative");
+                }
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -90,15 +104,15 @@ namespace ProductApi.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public async Task<ActionResult> DeleteProduct(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             try
-            {              
-                var deletingProduct = await _productRepository.Get(id);
+            {
+                var deletingProduct = await _productService.Get(id);
                 if (deletingProduct == null)
                     return NotFound($"ProductId {id} not found");
 
-                await _productRepository.Delete(id);
+                await _productService.Delete(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -108,11 +122,11 @@ namespace ProductApi.Controllers
         }
 
         [HttpGet("{Search}")]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProductsBySearch(int? category, int? subcategory, string? name)
+        public async Task<ActionResult<IEnumerable<Product>>> Search(int? category, int? subcategory, string? name)
         {
             try
             {
-                var result = await _productRepository.Search(category, subcategory, name);
+                var result = await _productService.Search(category, subcategory, name);
                 return Ok(result);
             }
             catch (Exception ex)

@@ -1,8 +1,8 @@
 ﻿using ProductApi.Models;
 
-namespace ProductApi.Repository
+namespace ProductApi.Service
 {
-    public interface IRepository<T>
+    public interface IService<T>
     {
         public Task<IEnumerable<T>> Get();
         public Task<T> Get(int id);
@@ -10,6 +10,7 @@ namespace ProductApi.Repository
         public Task<T> Add(T entity);
         public Task<T> Update(T entity);
         public Task Delete(int id);
+        public bool Validate(T entity);
 
     }
 }

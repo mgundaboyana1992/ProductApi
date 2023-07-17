@@ -1,6 +1,7 @@
 using ProductApi.Models;
 using Microsoft.EntityFrameworkCore;
 using ProductApi.Repository;
+using ProductApi.Service;
 
 namespace ProductApi
 {
@@ -27,6 +28,7 @@ namespace ProductApi
             });
 
             builder.Services.AddControllers();
+            builder.Services.AddScoped<IService<Product>, ProductService>();
             builder.Services.AddScoped<IRepository<Product>, ProductRepository>();
 
             var app = builder.Build();
