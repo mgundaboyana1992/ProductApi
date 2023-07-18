@@ -26,6 +26,7 @@ namespace ProductApi.Service
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 throw;
             }
         }
@@ -38,6 +39,7 @@ namespace ProductApi.Service
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 throw;
             }
         }
@@ -50,7 +52,8 @@ namespace ProductApi.Service
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError(ex.Message);
+                throw;
             }
         }
 
@@ -63,11 +66,12 @@ namespace ProductApi.Service
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 throw;
             }
         }
 
-        public async Task<IEnumerable<Product>> Search(int? category, int? subcategory, string name)
+        public async Task<IEnumerable<Product>> Search(int? category, int? subcategory, string? name)
         {
             try
             {
@@ -76,6 +80,7 @@ namespace ProductApi.Service
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 throw;
             }
         }
@@ -84,7 +89,7 @@ namespace ProductApi.Service
         {
             try
             {
-                Product result = null;
+                Product? result = null;
                 if (Validate(entity))
                 {
                     result = await _productRepository.Update(entity);
@@ -94,6 +99,7 @@ namespace ProductApi.Service
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 throw;
             }
         }

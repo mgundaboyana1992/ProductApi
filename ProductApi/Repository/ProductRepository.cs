@@ -1,14 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ProductApi.Controllers;
 using ProductApi.Models;
+using ProductApi.Service;
 
 namespace ProductApi.Repository
 {
     public class ProductRepository : IRepository<Product>
     {
         private readonly AppDbContext _dbContext;
+        private readonly ILogger<ProductRepository> _logger;
 
-        public ProductRepository(AppDbContext dbContext)
+        public ProductRepository(ILogger<ProductRepository> logger,AppDbContext dbContext)
         {
+            _logger = logger;
             _dbContext = dbContext;
         }
         public async Task<Product> Add(Product product)
@@ -21,6 +25,7 @@ namespace ProductApi.Repository
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 throw;
             }
         }
@@ -39,6 +44,7 @@ namespace ProductApi.Repository
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 throw;
             }
         }
@@ -52,6 +58,7 @@ namespace ProductApi.Repository
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 throw;
             }
         }
@@ -64,11 +71,12 @@ namespace ProductApi.Repository
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 throw;
             }
         }
 
-        public async Task<IEnumerable<Product>> Search(int? category, int? subcategory, string name)
+        public async Task<IEnumerable<Product>> Search(int? category, int? subcategory, string? name)
         {
             try
             {
@@ -86,13 +94,14 @@ namespace ProductApi.Repository
 
                 if (!string.IsNullOrEmpty(name))
                 {
-                    query = query.Where(x => x.Name.ToLower().Trim().Contains(name.ToLower().Trim()));
+                    query = query.Where(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToLower().Trim().Contains(name.ToLower().Trim()));
                 }
 
                 return await query.ToListAsync();
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 throw;
             }
         }
@@ -123,6 +132,7 @@ namespace ProductApi.Repository
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 throw;
             }
         }

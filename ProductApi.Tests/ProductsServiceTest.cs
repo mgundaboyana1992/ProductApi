@@ -17,6 +17,7 @@ namespace ProductApi.Tests
         private IList<Product> _products;
         public ProductsServiceTest()
         {
+            _products = GetPoducts(); ;
             _mockLogger = new Mock<ILogger<ProductService>>();
             _mockProductRepository = new Mock<IRepository<Product>>();
         }
@@ -102,12 +103,11 @@ namespace ProductApi.Tests
         }
 
         private ProductService CreateSut()
-        {
-            GetPoducts();
+        {           
             return new ProductService(_mockLogger.Object, _mockProductRepository.Object);
         }
 
-        private IEnumerable<Product> GetPoducts()
+        private IList<Product> GetPoducts()
         {
             if (_products == null)
             {

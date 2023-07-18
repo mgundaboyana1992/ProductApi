@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using ProductApi.Models;
 using ProductApi.Repository;
 using ProductApi.Service;
@@ -27,6 +28,7 @@ namespace ProductApi.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving products list");
             }
         }
@@ -46,6 +48,7 @@ namespace ProductApi.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error getting products list");
             }
         }
@@ -69,6 +72,7 @@ namespace ProductApi.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error creating products list");
             }
         }
@@ -99,6 +103,7 @@ namespace ProductApi.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error updating product");
             }
         }
@@ -117,6 +122,7 @@ namespace ProductApi.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error updating product");
             }
         }
@@ -126,11 +132,12 @@ namespace ProductApi.Controllers
         {
             try
             {
-                var result = await _productService.Search(category, subcategory, name);
+                IEnumerable<Product> result = await _productService.Search(category, subcategory, name);
                 return Ok(result);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error searching the products list");
             }
         }
