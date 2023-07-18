@@ -6,9 +6,9 @@ namespace ProductApi.Service
 {
     public class ProductService : IService<Product>
     {
-        private readonly ILogger<Product> _logger;
+        private readonly ILogger<ProductService> _logger;
         private readonly IRepository<Product> _productRepository;
-        public ProductService(ILogger<Product> logger, IRepository<Product> productRepository)
+        public ProductService(ILogger<ProductService> logger, IRepository<Product> productRepository)
         {
             _logger = logger;
             _productRepository = productRepository;
@@ -50,7 +50,7 @@ namespace ProductApi.Service
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
 

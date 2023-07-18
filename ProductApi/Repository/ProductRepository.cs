@@ -13,76 +13,118 @@ namespace ProductApi.Repository
         }
         public async Task<Product> Add(Product product)
         {
-            var result = await _dbContext.Products.AddAsync(product);
-            await _dbContext.SaveChangesAsync();
-            return result.Entity;
+            try
+            {
+                var result = await _dbContext.Products.AddAsync(product);
+                await _dbContext.SaveChangesAsync();
+                return result.Entity;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task Delete(int id)
         {
-            var result = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (result != null)
+            try
             {
-                 _dbContext.Products.Remove(result);
-                await _dbContext.SaveChangesAsync();
+                var result = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
+
+                if (result != null)
+                {
+                    _dbContext.Products.Remove(result);
+                    await _dbContext.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 
         public async Task<Product> Get(int id)
         {
-            var result = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
-            return result;
+            try
+            {
+                var result = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<IEnumerable<Product>> Get()
         {
-            return await _dbContext.Products.ToListAsync();
+            try
+            {
+                return await _dbContext.Products.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<IEnumerable<Product>> Search(int? category, int? subcategory, string name)
         {
-            IQueryable<Product> query = _dbContext.Products;
-
-            if (category != null)
+            try
             {
-                query = query.Where(x => x.Category == category);
-            }
+                IQueryable<Product> query = _dbContext.Products;
 
-            if (subcategory != null)
+                if (category != null)
+                {
+                    query = query.Where(x => x.Category == category);
+                }
+
+                if (subcategory != null)
+                {
+                    query = query.Where(x => x.SubCategory == subcategory);
+                }
+
+                if (!string.IsNullOrEmpty(name))
+                {
+                    query = query.Where(x => x.Name.ToLower().Trim().Contains(name.ToLower().Trim()));
+                }
+
+                return await query.ToListAsync();
+            }
+            catch (Exception ex)
             {
-                query = query.Where(x => x.SubCategory == subcategory);
+                throw;
             }
-
-            if (!string.IsNullOrEmpty(name))
-            {
-                query = query.Where(x => x.Name.ToLower().Trim().Contains(name.ToLower().Trim()));
-            }
-
-            return await query.ToListAsync();
         }
 
         public async Task<Product> Update(Product product)
         {
-            var result =await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == product.Id);
-
-            if (result != null)
+            try
             {
-                result.Code = product.Code;
-                result.Name = product.Name;
-                result.Description = product.Description;
-                result.Quantity = product.Quantity;
-                result.Price = product.Price;
-                result.Image = product.Image;
-                result.Category = product.Category;
-                result.SubCategory = product.SubCategory;
+                var result = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == product.Id);
 
-                await _dbContext.SaveChangesAsync();
+                if (result != null)
+                {
+                    result.Code = product.Code;
+                    result.Name = product.Name;
+                    result.Description = product.Description;
+                    result.Quantity = product.Quantity;
+                    result.Price = product.Price;
+                    result.Image = product.Image;
+                    result.Category = product.Category;
+                    result.SubCategory = product.SubCategory;
 
-                return result;
+                    await _dbContext.SaveChangesAsync();
+
+                    return result;
+                }
+
+                return null;
             }
-
-            return null;
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
     }

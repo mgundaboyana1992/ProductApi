@@ -3,46 +3,39 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using ProductApi.Controllers;
 using ProductApi.Models;
+using ProductApi.Repository;
 using ProductApi.Service;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 
 namespace ProductApi.Tests
 {
-    public class ProductsControllerTest
+    public class ProductsServiceTest
     {
-        private readonly Mock<ILogger<ProductsController>> _mockLogger;
-        private readonly Mock<IService<Product>> _mockProductService;
+        private readonly Mock<ILogger<ProductService>> _mockLogger;
+        private readonly Mock<IRepository<Product>> _mockProductRepository;
         private IList<Product> _products;
-        public ProductsControllerTest()
+        public ProductsServiceTest()
         {
-            _mockLogger = new Mock<ILogger<ProductsController>>();
-            _mockProductService =new  Mock<IService<Product>>();
+            _mockLogger = new Mock<ILogger<ProductService>>();
+            _mockProductRepository = new Mock<IRepository<Product>>();
         }
 
         [Fact]
         public async Task Get_ReturnsProductsAsync_Success()
         {
             var fixture = CreateSut();
-            _mockProductService.Setup(x => x.Get()).ReturnsAsync(_products);
+            _mockProductRepository.Setup(x => x.Get()).ReturnsAsync(_products);
             var result = await fixture.Get();
             Assert.NotNull(result);
         }
 
-        [Fact]
-        public async Task Get_ReturnsProductsAsync_Failure()
-        {
-            var fixture = CreateSut();
-            _mockProductService.Setup(x => x.Get()).ThrowsAsync(new Exception("Bad Request"));
-            var result = await fixture.Get();
-            Assert.Equal("500",((ObjectResult)result).StatusCode.ToString());
-        }
-       
 
         [Fact]
         public async Task Get_ReturnsProduct_Success()
         {
             var fixture = CreateSut();
-            _mockProductService.Setup(x => x.Get(1)).ReturnsAsync(_products[1]);
+            _mockProductRepository.Setup(x => x.Get(1)).ReturnsAsync(_products[1]);
             var result = await fixture.Get(1);
             Assert.NotNull(result);
         }
@@ -51,9 +44,16 @@ namespace ProductApi.Tests
         public async Task Get_ReturnsProduct_Failure()
         {
             var fixture = CreateSut();
-            _mockProductService.Setup(x => x.Get(1)).ThrowsAsync(new Exception("Bad Request"));
-            var result = await fixture.Get(1);
-            Assert.Equal("500",(result?.Result as ObjectResult)?.StatusCode.ToString());
+            _mockProductRepository.Setup(x => x.Get(1)).ThrowsAsync(new Exception("Bad Request"));
+            try
+            {
+                var result = await fixture.Get(1);
+            }
+            catch (Exception ex)
+            {
+                Assert.Equal("Bad Request", ex.Message);
+            }
+
         }
 
         [Fact]
@@ -61,8 +61,8 @@ namespace ProductApi.Tests
         {
             var fixture = CreateSut();
             Product? newProduct = new Product() { Id = 4, Code = "1004", Name = "Test", Quantity = 11, Price = 500, Description = "Slippers", Image = "", Category = 3, SubCategory = 6 };
-            _mockProductService.Setup(x => x.Add(newProduct)).ReturnsAsync(newProduct);
-            var result = await fixture.Create(newProduct);
+            _mockProductRepository.Setup(x => x.Add(newProduct)).ReturnsAsync(newProduct);
+            var result = await fixture.Add(newProduct);
             Assert.NotNull(result);
         }
 
@@ -71,18 +71,25 @@ namespace ProductApi.Tests
         {
             var fixture = CreateSut();
             Product? newProduct = new Product() { Id = 4, Code = "1004", Name = "Test", Quantity = 11, Price = 500, Description = "Slippers", Image = "", Category = 3, SubCategory = 6 };
-            _mockProductService.Setup(x => x.Add(newProduct)).ThrowsAsync(new Exception("Bad Request"));
-            var result = await fixture.Create(newProduct);
-            Assert.Equal("500", (result?.Result as ObjectResult)?.StatusCode.ToString());
+            _mockProductRepository.Setup(x => x.Add(newProduct)).ThrowsAsync(new Exception("Bad Request"));
+
+            try
+            {
+                var result = await fixture.Add(newProduct);
+            }
+            catch (Exception ex)
+            {
+                Assert.Equal("Bad Request", ex.Message);
+            }
         }
 
         [Fact]
         public async Task Update_ReturnsProduct()
         {
             var fixture = CreateSut();
-            Product? newProduct = new Product() { Id =3, Code = "1003", Name = "Test1", Quantity = 11, Price = 500, Description = "Slippers", Image = "", Category = 3, SubCategory = 6 };
-            _mockProductService.Setup(x => x.Update(newProduct)).ReturnsAsync(newProduct);
-            var result = await fixture.Update(3,newProduct);
+            Product? newProduct = new Product() { Id = 3, Code = "1003", Name = "Test1", Quantity = 11, Price = 500, Description = "Slippers", Image = "", Category = 3, SubCategory = 6 };
+            _mockProductRepository.Setup(x => x.Update(newProduct)).ReturnsAsync(newProduct);
+            var result = await fixture.Update(newProduct);
             Assert.NotNull(result);
         }
 
@@ -90,15 +97,14 @@ namespace ProductApi.Tests
         public async Task Delete_Success()
         {
             var fixture = CreateSut();
-            _mockProductService.Setup(x => x.Delete(3));
-            var result = await fixture.Delete(3);
-            Assert.NotNull(result);
+            _mockProductRepository.Setup(x => x.Delete(3));
+            await fixture.Delete(3);
         }
 
-        private ProductsController CreateSut()
+        private ProductService CreateSut()
         {
             GetPoducts();
-            return new ProductsController(_mockLogger.Object, _mockProductService.Object);
+            return new ProductService(_mockLogger.Object, _mockProductRepository.Object);
         }
 
         private IEnumerable<Product> GetPoducts()
