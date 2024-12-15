@@ -36,10 +36,11 @@ namespace ProductApi
             // Configure the HTTP request pipeline.
             app.UseCors("MyPolicy");
 
+            app.UseRouting();
+
             app.UseAuthorization();
 
             app.MapControllers();
-
             app.Run();
         }
     }

@@ -5,7 +5,7 @@ using ProductApi.Repository;
 using ProductApi.Service;
 
 namespace ProductApi.Controllers
-{
+{    
     [ApiController]
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
